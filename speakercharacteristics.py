@@ -89,6 +89,7 @@ def ngramsfreq(dataframe, n):
 		df2 = df2.assign(ngram=str(gram))
 		df3 = df3.append(df2)
 	df3['description']=df3['description'].apply(lambda x: ' '.join(x))
+	df3['text']=df3['text'].apply(lambda x: ' '.join(x))
 	df3= df3.drop_duplicates(subset='description')
 	return df3
 

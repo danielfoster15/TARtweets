@@ -65,12 +65,13 @@ def reportedspeech(dataframe):
 	#find tweets containing newlines or  long dashes '–' ('\x97' is how this appears in the tweets)
 	#or that begin with a hyphen '-' and contain more than one hyphen '-'
 	reportedspeechdf = df[df['text'].apply(lambda x: '\x97' in x or (x[0]=='-' and '-' in x[1:]))]
+	reportedspeechdf['text']=reportedspeechdf['text'].apply(lambda x: ' '.join(x))
 	return reportedspeechdf
 
 #run the code and save spreadsheet to directory
 if __name__ == '__main__':
 	tokenizer = nltk.TweetTokenizer(preserve_case=False)
-	filename='totaltweetsall.csv'
+	filename='totaltweetsallmeta.csv'
 	df = pd.read_csv(filename, encoding='latin-1')
 	cleandf = cleantweets(df)
 	autolessdf=removeautomation(cleandf, tokenizer)

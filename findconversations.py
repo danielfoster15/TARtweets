@@ -82,6 +82,7 @@ def conversations(dataframe):
 		else:
 			allconvosdf=allconvosdf.append(convodf)
 	print('Number of users with replies:', len(allconvosdf['user_id_str'].unique()))
+	allconvosdf['text']=allconvosdf['text'].apply(lambda x: ' '.join(x))
 	return allconvosdf
 #run the code and save spreadsheet to directory
 if __name__ == '__main__':

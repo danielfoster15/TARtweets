@@ -80,12 +80,13 @@ def subtweets(dataframe, n):
 	df=df[df['text'].apply(lambda x: '@' not in x)]
 	df=df[df['in_reply_to_user_id_str'].apply(lambda x: math.isnan(x))]
 	df=df[df['text'].apply(lambda x: bool(set(list(ngrams(x, n))) & hapaxset))]	
+	df['text']=df['text'].apply(lambda x: ' '.join(x))
 	return df
 
 #run the code and save spreadsheet to directory
 if __name__ == '__main__':
 	tokenizer = nltk.TweetTokenizer(preserve_case=False)
-	filename='totaltweetsall.csv'
+	filename='totaltweetsallmeta.csv'
 	df = pd.read_csv(filename, encoding='latin-1')
 	cleandf = cleantweets(df)
 	autolessdf=removeautomation(cleandf, tokenizer)
