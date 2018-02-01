@@ -7,12 +7,13 @@ import re
 import math
 
 def cleantweets(dataframe):
-	df = dataframe
+	df = pd.DataFrame.copy(dataframe)
 	#clean punctuation from tweets
-	tweetpuncts='!"$%&\'()*+,./:;<=>?[]^_`{|}~¡¿'
+	tweetpuncts='!"$%&\'()*+,./:;<=>?[\]^_`{|}~¡¿'
+	#keep linebreaks as 'linebreak'
+	df['text']=df['text'].apply(lambda x: re.sub('\r\r\n', ' linebreak ', x))
 	df['text']=df['text'].apply(lambda x: re.sub('['+tweetpuncts+']', '', x))
 	#clean URLs from tweets
-
 	df['text']=df['text'].apply(lambda x: re.sub(r'http[^\s]+', '', x))
 	#clean emoji from tweets
 	df['text']=df['text'].apply(lambda x: re.sub(r'\\ud', 'EMOJIud', x))
@@ -20,7 +21,7 @@ def cleantweets(dataframe):
 	return df
 
 def removeautomation(dataframe, tokenizer):
-	df=dataframe
+	df=pd.DataFrame.copy(dataframe)
 	#tokenize dataframe
 	df['text']=df['text'].apply(lambda x:tokenizer.tokenize(x))
 	autodict={}
@@ -47,7 +48,7 @@ def removeautomation(dataframe, tokenizer):
 	#find most frequent large-scale ngrams and remove from corpus
 	fdist = nltk.FreqDist(autodict)
 	for gram, number in fdist.most_common(50):
-		df = df[[set(list(gram)).issubset(set(row)) == False  for row in df['text']]]
+		df = df[[set(([gram])).issubset(set(list(ngrams(row, avgtokenlen-2)))) == False  for row in df['text']]]
 	for row in df['text']:
 		autolesstokens+=len(row)
 		autolesstweets+=1
@@ -59,12 +60,11 @@ def removeautomation(dataframe, tokenizer):
 
 
 def reportedspeech(dataframe):
-	df= dataframe
+	df= pd.DataFrame.copy(dataframe)
 	reportedspeechdf=pd.DataFrame()
-	ngramdict={}
-	#find tweets containing newlines or  long dashes '–' ('\x97' is how this appears in the tweets)
-	#or that begin with a hyphen '-' and contain more than one hyphen '-'
-	reportedspeechdf = df[df['text'].apply(lambda x: '\x97' in x or (x[0]=='-' and '-' in x[1:]))]
+	#find tweets containing newlines
+	#or tweets that begin with a hyphen '-' and contain more than one hyphen '-'
+	reportedspeechdf = reportedspeechdf.append(df[df['text'].apply(lambda x: 'linebreak' in x or (x[0]=='-' and '-' in x[1:]))])
 	reportedspeechdf['text']=reportedspeechdf['text'].apply(lambda x: ' '.join(x))
 	return reportedspeechdf
 
@@ -74,6 +74,8 @@ if __name__ == '__main__':
 	filename='totaltweetsallmeta.csv'
 	df = pd.read_csv(filename, encoding='latin-1')
 	cleandf = cleantweets(df)
+
 	autolessdf=removeautomation(cleandf, tokenizer)
+
 	reportedspeechdf = reportedspeech(autolessdf)
 	reportedspeechdf.to_csv('reportedspeech.csv')

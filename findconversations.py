@@ -48,7 +48,7 @@ def removeautomation(dataframe, tokenizer):
 	#find most frequent large-scale ngrams and remove tweets containing them from corpus
 	fdist = nltk.FreqDist(autodict)
 	for gram, number in fdist.most_common(50):
-		df = df[[set(list(gram)).issubset(set(row)) == False  for row in df['text']]]
+		df = df[[set(([gram])).issubset(set(list(ngrams(row, avgtokenlen-2)))) == False  for row in df['text']]]
 	for row in df['text']:
 		autolesstokens+=len(row)
 		autolesstweets+=1
