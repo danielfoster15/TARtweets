@@ -7,9 +7,9 @@ import re
 import math
 
 def cleantweets(dataframe):
-	df = pd.DataFrame.copy(dataframe)
+	df = dataframe
 	#clean punctuation from tweets
-	tweetpuncts='!"$%&\'()*+,-./:;<=>?[\]^_`{|}~¡¿'
+	tweetpuncts='!"$%&\'()*+,./:;<=>?[]^_`{|}~¡¿'
 	df['text']=df['text'].apply(lambda x: re.sub('['+tweetpuncts+']', '', x))
 	#clean URLs from tweets
 
