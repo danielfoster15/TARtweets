@@ -11,7 +11,7 @@ def cleantweets(dataframe):
 	#clean punctuation from tweets
 	tweetpuncts='!"$%&\'()*+,./:;<=>?[\]^_`{|}~¡¿'
 	#keep linebreaks as 'linebreak'
-	df['text']=df['text'].apply(lambda x: re.sub('\r\r\n', ' linebreak ', x))
+	df['text']=df['text'].apply(lambda x: re.sub('\r\r\n', ' – ', x))
 	df['text']=df['text'].apply(lambda x: re.sub('['+tweetpuncts+']', '', x))
 	#clean URLs from tweets
 	df['text']=df['text'].apply(lambda x: re.sub(r'http[^\s]+', '', x))
@@ -62,9 +62,9 @@ def removeautomation(dataframe, tokenizer):
 def reportedspeech(dataframe):
 	df= pd.DataFrame.copy(dataframe)
 	reportedspeechdf=pd.DataFrame()
-	#find tweets containing newlines
+	#find tweets containing newlines which are replaced with an en-dash to make it through the cleaning code
 	#or tweets that begin with a hyphen '-' and contain more than one hyphen '-'
-	reportedspeechdf = reportedspeechdf.append(df[df['text'].apply(lambda x: 'linebreak' in x or (x[0]=='-' and '-' in x[1:]))])
+	reportedspeechdf = reportedspeechdf.append(df[df['text'].apply(lambda x: x.count('–') >1 or (x[0]=='-' and '-' in x[1:]))])
 	reportedspeechdf['text']=reportedspeechdf['text'].apply(lambda x: ' '.join(x))
 	return reportedspeechdf
 
