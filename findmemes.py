@@ -1,6 +1,7 @@
 import pandas as pd
 import nltk
 from nltk.util import ngrams
+from nltk.corpus import stopwords
 import os
 import string
 import re
@@ -67,7 +68,7 @@ def ngramsfreq(dataframe, n):
 			else:
 				ngramdict[gram] +=1
 	fdist=nltk.FreqDist(ngramdict)
-#using the most common 100 ngrams, append tweets containing those common ngrams to a dataframe with the ngram as its label
+	#using the most common 100 ngrams, append tweets containing those common ngrams to a dataframe with the ngram as its label
 	for gram, number in fdist.most_common(100):
 		df2=pd.DataFrame()
 		df2 = df2.append(df[[set([gram]).issubset(set(list(ngrams(row,n)))) == True for row in df['text']]])
